@@ -590,6 +590,14 @@ ggplot(Fig4DataLong, aes(x = year, PopSum, fill = AgeCat)) +
 
 
 
+### Calculate contribution by each variable ####
+
+LagosData = AllDataClipped %>%
+  filter(city_name == "Lagos")
+
+
+
+
 
 
 
