@@ -4,26 +4,12 @@ rm(list = ls())
 library(tidyverse)
 library(dplyr)
 
-# Load Heat UCDB data ####
+setwd("/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/")
 
-heat28 = read.csv("/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/data/heat/heat28UCDB.csv") %>%
-  select(ID_HDC_G0, year, tot_days) %>%
-  dplyr::rename(UrbanID = ID_HDC_G0,
-                heat28_days = tot_days)
-
-heat30 = read.csv("/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/data/heat/heat30UCDB.csv") %>%
+urbanHeat = read.csv("data/heat/Heat30Estimated2020.csv") %>%
   select(ID_HDC_G0, year, tot_days) %>%
   dplyr::rename(UrbanID = ID_HDC_G0,
                 heat30_days = tot_days)
-
-heat32 = read.csv("/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/data/heat/heat32UCDB.csv") %>%
-  select(ID_HDC_G0, year, tot_days) %>%
-  dplyr::rename(UrbanID = ID_HDC_G0,
-                heat32_days = tot_days)
-
-# merge all data together
-urbanHeat = merge(heat28, heat30, by= c("UrbanID", "year"), all=T)
-urbanHeat = merge(urbanHeat, heat32, by= c("UrbanID", "year"), all=T)
 
 # Load AQ UCDB data ####
 
@@ -35,6 +21,7 @@ UrbanPM25 = read.csv("/Users/andrewzimmer/Documents/Montana State - Postdoc/Rese
 
 UrbanOzone = read.csv('/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/data/aq/ozone/ozone_ucdb.csv') %>%
   dplyr::rename(UrbanID = ID, Ozone = layer)
+
 
 # merge AQ and Heat together ####
 urbanAQ = merge(UrbanNo2, UrbanPM25, by= c("UrbanID", "year"), all=T)
@@ -65,9 +52,7 @@ MeanUrbanAQHeat = mergedHeatAQDemog %>%
   dplyr::summarise(MeanNO2 = mean(NO2,  na.rm = T),
                    MeanPM25 = mean(PM25,  na.rm = T),
                    MeanOzone = mean(Ozone, na.rm = T),
-                   MeanHeat28 = mean(heat28_days, na.rm = T),
-                   MeanHeat30 = mean(heat30_days, na.rm = T),
-                   MeanHeat32 = mean(heat32_days, na.rm = T))
+                   MeanHeat30 = mean(heat30_days, na.rm = T))
 
 
 UrbanDemog2020 = urbanDem %>%
@@ -82,7 +67,7 @@ MeanUrbanAQHeatDemog$OldPop <- rowSums(MeanUrbanAQHeatDemog[c('f_65', 'f_70', 'f
 MeanUrbanAQHeatDemog$TotalPop <- rowSums(MeanUrbanAQHeatDemog[c('YoungPop', 'WorkingPop', 'OldPop')])
 MeanUrbanAQHeatDemog$DependencyRatio = (MeanUrbanAQHeatDemog$YoungPop + MeanUrbanAQHeatDemog$OldPop) / MeanUrbanAQHeatDemog$WorkingPop
 
-MergedMonthlyDemHeatAQSummary = dplyr::select(MeanUrbanAQHeatDemog, UrbanID, Name, country_iso, country_name, continent_name, latitude, longitude, YoungPop, WorkingPop, OldPop, TotalPop, DependencyRatio, MeanNO2, MeanPM25, MeanHeat28, MeanHeat30, MeanHeat32)
+MergedMonthlyDemHeatAQSummary = dplyr::select(MeanUrbanAQHeatDemog, UrbanID, Name, country_iso, country_name, continent_name, latitude, longitude, YoungPop, WorkingPop, OldPop, TotalPop, DependencyRatio, MeanNO2, MeanPM25, MeanHeat30)
 
 # save file
 write.csv(MeanUrbanAQHeatDemog, "/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/data/merged/Final Merged Data/UCDB-Dem-Heat-AQ-Mean.csv")
