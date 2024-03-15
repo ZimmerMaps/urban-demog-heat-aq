@@ -498,7 +498,9 @@ ggpubr::ggarrange(PMPopulationPlot, NOPopulationPlot, OzonePopulationPlot, HeatP
 
 Fig5Data = AllDataClipped2019 %>%
   filter(HeatDays30 > 30 &
-           AnnualPM25 > 35)
+           AnnualOzone > 50 &
+           AnnualPM25 > 25 & 
+           AnnualNO2 > 21.28)
 
 MapPlot = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
@@ -509,7 +511,7 @@ MapPlot = ggplot() +
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
   labs(title = "Cities Exposed to Extreme Heat & Poor AQ", color = "", 
-       subtitle = "Heat30 > 30 Days &  NO2 > 10 &  PM2.5 > 35 & Ozone > 60") +
+       subtitle = "Heat30 > 30 Days &  All > Interim2") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -564,7 +566,7 @@ ggplot(AllDataClippedComplete, aes(x = year, y = TotalPop)) +
   geom_bar(stat = "identity")
 
 Fig4Data = AllDataClippedComplete %>%
-  filter(AnnualPM25 > 5 & AnnualNO2 > 10 & AnnualOzone > 60 & HeatDays30 > 30)
+  filter(AnnualPM25 > 5 & AnnualNO2 > 10.64 & AnnualOzone > 35 & HeatDays30 > 30)
 
 Fig4Data  = Fig4Data %>%
   group_by(year) %>%
@@ -580,8 +582,7 @@ ggplot(Fig4DataLong, aes(x = year, PopSum, fill = AgeCat)) +
   scale_y_continuous(labels = comma) +
   theme_bw() +
   labs(x = "", y = "Population", 
-       title = "Heat30 > 30 days & PM2.5 > 5 & NO2 > 10 & Ozone > 60 &",
-       subtitle = "Extreme Heat defined as days > 30°C WBGT | High PM2.5 defined as annual avg. > 5",
+       title = "Heat30 > 30 days & PM2.5, O3 and NO2 > Interim2",
        fill = "Category") +
   theme(legend.position = c(0.2, 0.8))
 
