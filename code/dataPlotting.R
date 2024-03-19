@@ -29,7 +29,7 @@ colnames(MeanDataClipped) = c('urbanid', 'year', 'city_name', 'country_iso', 'co
 #MeanDataClipped <- MeanDataClipped[complete.cases(MeanDataClipped), ]
 
 AllDataClipped = AllData %>%
-  filter(year %in% c(2005:2019))
+  filter(year %in% c(2005:2020))
 
 AllDataClipped$YoungPop <- rowSums(AllDataClipped[c('f_0', 'm_0', 'f_1', 'm_1', 'f_5', 'm_5', 'f_10', 'm_10')])
 AllDataClipped$WorkingPop <- rowSums(AllDataClipped[c('f_15', 'f_20', 'f_25', 'f_30', 'f_35', 'f_40', 'f_45', 'f_50', 'f_55', 'f_60', 'm_15', 'm_20', 'm_25', 'm_30', 'm_35', 'm_40', 'm_45', 'm_50', 'm_55', 'm_60')])
@@ -102,8 +102,8 @@ AllDataClipped$DependencyRatioCategory <- factor(AllDataClipped$DependencyRatioC
 
 
 # Figure 1 - Maps of all variables as subplot ####
-AllDataClipped2019 = AllDataClipped %>%
-  filter(year == 2019)
+AllDataClipped2020 = AllDataClipped %>%
+  filter(year == 2020)
 
 # KEEP ONLY CITIES WITH ALL DATA POINTS
 #AllDataClipped2019 <- AllDataClipped2019[complete.cases(AllDataClipped2019), ]
@@ -111,19 +111,19 @@ AllDataClipped2019 = AllDataClipped %>%
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 #arrange value plotting highest
-AllDataClipped2019 = AllDataClipped2019 %>%
+AllDataClipped2020 = AllDataClipped2020 %>%
   arrange(DependencyRatio)
 
 DRMap = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2019, aes(x = longitude, y = latitude, color = DependencyRatio), size = 0.3) +
+  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = DependencyRatio), size = 0.3) +
   scale_color_viridis_c(limits = c(0,1.4), option = 'viridis', breaks = seq(0, 1.4, 0.2)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
-  labs(title = "Population Dependency Ratio", color = "", subtitle = "2016") +
+  labs(title = "Population Dependency Ratio", color = "", subtitle = "2020") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -133,19 +133,19 @@ DRMap = ggplot() +
 DRMap
 
 #arrange value plotting highest
-AllDataClipped2019 = AllDataClipped2019 %>%
+AllDataClipped2020 = AllDataClipped2020 %>%
   arrange(AnnualNO2)
 
 NO2Map = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2019, aes(x = longitude, y = latitude, color = AnnualNO2), size = 0.3) +
+  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = AnnualNO2), size = 0.3) +
   scale_color_viridis_c(limits = c(0,25), option = 'plasma', breaks = seq(0, 25, 5)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
-  labs(title = expression("Mean Annual NO"[2] ~ "(ppbv)"), color = "", subtitle = "2016") +
+  labs(title = expression("Mean Annual NO"[2] ~ "(ppbv)"), color = "", subtitle = "2020") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -156,19 +156,19 @@ NO2Map
 
 
 #arrange value plotting highest
-AllDataClipped2019 = AllDataClipped2019 %>%
+AllDataClipped2020 = AllDataClipped2020 %>%
   arrange(AnnualPM25)
 
 PMMap = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2019, aes(x = longitude, y = latitude, color = AnnualPM25), size = 0.3) +
+  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = AnnualPM25), size = 0.3) +
   scale_color_viridis_c(limits = c(0,150), option = 'plasma', breaks = seq(0, 150, 25)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
-  labs(title = expression("Mean Annual PM"[2.5] ~ "(µg/m"^3*")"), color = "", subtitle = "2016") +
+  labs(title = expression("Mean Annual PM"[2.5] ~ "(µg/m"^3*")"), color = "", subtitle = "2020") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -178,19 +178,19 @@ PMMap = ggplot() +
 PMMap
 
 #arrange value plotting AllDataClipped2016
-AllDataClipped2019 = AllDataClipped2019 %>%
+AllDataClipped2020 = AllDataClipped2020 %>%
   arrange(AnnualOzone)
 
 OzoneMap = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2019, aes(x = longitude, y = latitude, color = AnnualOzone), size = 0.3) +
+  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = AnnualOzone), size = 0.3) +
   scale_color_viridis_c(limits = c(0,80), option = 'plasma', breaks = seq(0, 80, 20)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
-  labs(title = expression("Mean Annual Ozone" ~ "(ppbv)"), color = "", subtitle = "2016") +
+  labs(title = expression("Mean Annual Ozone" ~ "(ppbv)"), color = "", subtitle = "2020") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -200,19 +200,19 @@ OzoneMap = ggplot() +
 OzoneMap
 
 #arrange value plotting highest
-AllDataClipped2019 = AllDataClipped2019 %>%
+AllDataClipped2020 = AllDataClipped2020 %>%
   arrange(HeatDays30)
 
 HeatMap = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2019, aes(x = longitude, y = latitude, color = HeatDays30), size = 0.3) +
+  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = HeatDays30), size = 0.3) +
   scale_color_viridis_c(limits = c(0,260), option = 'rocket', begin = 0.2, breaks = seq(0,260,40)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
-  labs(title = "# Days > 30°C WBGT", color = "", subtitle = "2016") +
+  labs(title = "# Days > 30°C WBGT", color = "", subtitle = "2020") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -231,7 +231,7 @@ ggpubr::ggarrange(DRMap, NO2Map, PMMap, OzoneMap, HeatMap, nrow = 3, ncol = 2)
 
 # Figure 1 - Nigeria Inset ####
 
-AllDataClippedNigeria = AllDataClipped2019 %>%
+AllDataClippedNigeria = AllDataClipped2020 %>%
   filter(country_name == "Nigeria")
 
 nigeria <- ne_countries(country = "Nigeria", scale = "large", returnclass = "sf")
@@ -407,7 +407,7 @@ color_palette <- c("#0c2c4d", "#1f78b4", "#92b3d3",
                    "#402750", "#6a3d9a", "#b09abf",
                    "#5696bb", "#a6cee3", "#d5ebf7")
 
-test = AllDataClipped2019 %>%
+test = AllDataClipped2020 %>%
   group_by(PM25WHOCategory, continent_name) %>%
   summarise(YoungPopExposed = sum(YoungPop),
             WorkingPopExposed = sum(WorkingPop),
@@ -427,7 +427,7 @@ PMPopulationPlot = ggplot(test_long, aes(x = PM25WHOCategory, y =PopSum, fill = 
   labs(x = expression("WHO Annual PM2.5 Threshold", y = "Total Population", fill = "Country & Age-Group"))
 PMPopulationPlot
 
-test = AllDataClipped2019 %>%
+test = AllDataClipped2020 %>%
   group_by(NO2WHOCategory, continent_name) %>%
   summarise(YoungPopExposed = sum(YoungPop),
             WorkingPopExposed = sum(WorkingPop),
@@ -448,7 +448,7 @@ NOPopulationPlot = ggplot(test_long, aes(x = NO2WHOCategory, y =PopSum, fill = P
 NOPopulationPlot
 
 
-test = AllDataClipped2019 %>%
+test = AllDataClipped2020 %>%
   group_by(OzoneWHOCategory, continent_name) %>%
   summarise(YoungPopExposed = sum(YoungPop),
             WorkingPopExposed = sum(WorkingPop),
@@ -468,7 +468,7 @@ OzonePopulationPlot = ggplot(test_long, aes(x = OzoneWHOCategory, y =PopSum, fil
   labs(x = expression("WHO Annual Ozone Threshold", y = "Total Population", fill = "Country & Age-Group"))
 OzonePopulationPlot
 
-test = AllDataClipped2019 %>%
+test = AllDataClipped2020 %>%
   group_by(HeatCategory, continent_name) %>%
   summarise(YoungPopExposed = sum(YoungPop),
             WorkingPopExposed = sum(WorkingPop),
@@ -496,7 +496,7 @@ ggpubr::ggarrange(PMPopulationPlot, NOPopulationPlot, OzonePopulationPlot, HeatP
 
 ## Figure 5 ####
 
-Fig5Data = AllDataClipped2019 %>%
+Fig5Data = AllDataClipped2020 %>%
   filter(HeatDays30 > 30 &
            AnnualOzone > 50 &
            AnnualPM25 > 25 & 
@@ -587,14 +587,75 @@ ggplot(Fig4DataLong, aes(x = year, PopSum, fill = AgeCat)) +
   theme(legend.position = c(0.2, 0.8))
 
 
-
-
-
-
 ### Calculate contribution by each variable ####
+ExposedPop2005 = AllDataClipped %>%
+  filter(year == 2005) %>%
+  summarize(SumYoungPop = sum(YoungPop, na.rm = T),
+            SumWorkingPop = sum(WorkingPop, na.rm = T),
+            SumOldPop = sum(OldPop, na.rm = T))
 
-LagosData = AllDataClipped %>%
-  filter(city_name == "Lagos")
+ExposedCities2005 <- AllDataClipped %>%
+  filter(year == 2005) %>%
+  mutate(
+    HeatExceed = if_else(!is.na(HeatDays30) & HeatDays30 > 30, 1, 0),
+    OzoneExceed = if_else(!is.na(AnnualOzone) & AnnualOzone > 50, 1, 0),
+    PM25Exceed = if_else(!is.na(AnnualPM25) & AnnualPM25 > 25, 1, 0),
+    NO2Exceed = if_else(!is.na(AnnualNO2) & AnnualNO2 > 21.28, 1, 0),
+    AllExceed = if_else(HeatExceed & OzoneExceed & PM25Exceed & NO2Exceed, 1, 0)
+  ) %>%
+  summarise(
+    CountHeat = sum(HeatExceed),
+    CountOzone = sum(OzoneExceed),
+    CountPM25 = sum(PM25Exceed),
+    CountNO2 = sum(NO2Exceed),
+    CountAll = sum(AllExceed)
+  )
+ExposedCities2005$year = 2005
+
+ExposedPop2005 = cbind(ExposedPop2005, ExposedCities2005)
+
+
+ExposedPop2020 = AllDataClipped %>%
+  filter(year == 2020) %>%
+  summarize(SumYoungPop = sum(YoungPop, na.rm = T),
+            SumWorkingPop = sum(WorkingPop, na.rm = T),
+            SumOldPop = sum(OldPop, na.rm = T))
+
+
+ExposedCities2020 <- AllDataClipped %>%
+  filter(year == 2020) %>%
+  mutate(
+    HeatExceed = if_else(!is.na(HeatDays30) & HeatDays30 > 30, 1, 0),
+    OzoneExceed = if_else(!is.na(AnnualOzone) & AnnualOzone > 50, 1, 0),
+    PM25Exceed = if_else(!is.na(AnnualPM25) & AnnualPM25 > 25, 1, 0),
+    NO2Exceed = if_else(!is.na(AnnualNO2) & AnnualNO2 > 21.28, 1, 0),
+    AllExceed = if_else(HeatExceed & OzoneExceed & PM25Exceed & NO2Exceed, 1, 0)
+  ) %>%
+  summarise(
+    CountHeat = sum(HeatExceed),
+    CountOzone = sum(OzoneExceed),
+    CountPM25 = sum(PM25Exceed),
+    CountNO2 = sum(NO2Exceed),
+    CountAll = sum(AllExceed)
+  )
+ExposedCities2020$year = 2020
+
+ExposedPop2020 = cbind(ExposedPop2020, ExposedCities2020)
+
+ExposedPopChange = rbind(ExposedPop2005, ExposedPop2020)
+
+# count number of cities that exceed all thresholds together
+
+# population exposed if 2005 amounts were applied to 2020
+
+
+# make a binary column for the cities that would be included in the thresholds in 2005
+# make a binary column for the cities that exceeded the thresholds in 2020
+
+# sum the population of those = 1 in 2005
+# sum the population of those = 1 in 2020
+
+
 
 
 
