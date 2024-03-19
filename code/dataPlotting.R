@@ -112,6 +112,30 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 
 #arrange value plotting highest
 AllDataClipped2020 = AllDataClipped2020 %>%
+  arrange(TotalPop)
+
+PopMap <- ggplot() +
+  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
+  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = TotalPop), size = 0.3) +
+  scale_color_viridis_c(limits = c(1, 46000000), option = 'viridis', 
+                        breaks = c(1, 10, 100, 1000, 10000, 100000, 1000000, 10000000), 
+                        trans = "log10") +
+  scale_y_continuous(limits = c(-55, 90)) +
+  theme_void() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(title = "Total Urban Population", color = "", subtitle = "2020") +
+  guides(color = guide_colourbar(direction = "horizontal", 
+                                 barwidth = 20, 
+                                 barheight = 1.2,
+                                 frame.color = "grey80",
+                                 ticks.color = "grey80")) 
+
+PopMap
+
+
+AllDataClipped2020 = AllDataClipped2020 %>%
   arrange(DependencyRatio)
 
 DRMap = ggplot() +
@@ -224,7 +248,7 @@ HeatMap
 
 
 
-ggpubr::ggarrange(DRMap, NO2Map, PMMap, OzoneMap, HeatMap, nrow = 3, ncol = 2)
+ggpubr::ggarrange(PopMap, DRMap, NO2Map, PMMap, OzoneMap, HeatMap, nrow = 3, ncol = 2)
 
 
 
@@ -421,7 +445,7 @@ test_long <- test_long[complete.cases(test_long), ]
 PMPopulationPlot = ggplot(test_long, aes(x = PM25WHOCategory, y =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1250000000), breaks = seq(0, 1250000000, by = 200000000)) +
+  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
   scale_x_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("WHO Annual PM2.5 Threshold", y = "Total Population", fill = "Country & Age-Group"))
@@ -441,7 +465,7 @@ test_long <- test_long[complete.cases(test_long), ]
 NOPopulationPlot = ggplot(test_long, aes(x = NO2WHOCategory, y =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1250000000), breaks = seq(0, 1250000000, by = 200000000)) +
+  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
   scale_x_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("WHO Annual NO2 Threshold", y = "Total Population", fill = "Country & Age-Group"))
@@ -462,7 +486,7 @@ test_long <- test_long[complete.cases(test_long), ]
 OzonePopulationPlot = ggplot(test_long, aes(x = OzoneWHOCategory, y =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1250000000), breaks = seq(0, 1250000000, by = 200000000)) +
+  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
   scale_x_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("WHO Annual Ozone Threshold", y = "Total Population", fill = "Country & Age-Group"))
@@ -482,7 +506,7 @@ test_long <- test_long[complete.cases(test_long), ]
 HeatPopulationPlot = ggplot(test_long, aes(x = HeatCategory, y =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1250000000), breaks = seq(0, 1250000000, by = 200000000)) +
+  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
   scale_x_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("Heat Threshold", y = "Total Population", fill = "Country & Age-Group")) 
