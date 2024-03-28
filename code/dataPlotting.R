@@ -522,9 +522,9 @@ ggpubr::ggarrange(PMPopulationPlot, NOPopulationPlot, OzonePopulationPlot, HeatP
 
 Fig5Data = AllDataClipped2020 %>%
   filter(HeatDays30 > 30 &
-           AnnualOzone > 50 &
-           AnnualPM25 > 25 & 
-           AnnualNO2 > 21.28)
+           AnnualOzone > 35 )
+           #AnnualPM25 > 25 ) 
+           #AnnualNO2 > 15.96)
 
 MapPlot = ggplot() +
   geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
@@ -535,7 +535,7 @@ MapPlot = ggplot() +
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)) +
   labs(title = "Cities Exposed to Extreme Heat & Poor AQ", color = "", 
-       subtitle = "Heat30 > 30 Days &  All > Interim2") +
+       subtitle = "Heat30 > 30 Days &  AQ > Interim2") +
   guides(color = guide_colourbar(direction = "horizontal", 
                                  barwidth = 20, 
                                  barheight = 1.2,
@@ -580,7 +580,6 @@ PyramidPlot = ggplot(data = Fig5Data,
 PyramidPlot
 
 ggpubr::ggarrange(MapPlot, PyramidPlot, nrow = 1)
-
 
 
 AllDataClippedComplete = AllDataClipped 
@@ -679,6 +678,87 @@ ExposedPopChange = rbind(ExposedPop2005, ExposedPop2020)
 # sum the population of those = 1 in 2005
 # sum the population of those = 1 in 2020
 
+
+## Calculate contribution to increased exposure ####
+UsefulData = AllDataClipped %>%
+  select(urbanid, year, AnnualNO2, AnnualPM25, AnnualOzone, HeatDays30, TotalPop)
+UsefulData <- UsefulData[complete.cases(UsefulData), ]
+
+UsefulData$NO2Exposure = UsefulData$AnnualNO2 * UsefulData$TotalPop
+UsefulData$PM25Exposure = UsefulData$AnnualPM25 * UsefulData$TotalPop
+UsefulData$OzoneExposure = UsefulData$AnnualOzone * UsefulData$TotalPop
+UsefulData$HeatExposure = UsefulData$HeatDays30 * UsefulData$TotalPop
+
+UsefulData$TotalExposure = UsefulData$NO2Exposure + UsefulData$PM25Exposure + UsefulData$OzoneExposure + UsefulData$HeatExposure
+UsefulData$TotalValues = UsefulData$AnnualNO2 + UsefulData$AnnualPM25 + UsefulData$AnnualOzone + UsefulData$HeatDays30 + UsefulData$TotalPop
+
+# Now, let's create an empty dataframe to store the coefficients
+coefficients_df_heat <- data.frame(urbanid = character(),
+                              coefficient = numeric(),
+                              stringsAsFactors = FALSE)
+
+# Get unique urbanids
+urbanids <- unique(UsefulData$urbanid)
+
+# Loop through each urbanid
+for (id in urbanids) {
+  # Subset data for each urbanid
+  subset_data <- UsefulData[UsefulData$urbanid == id, ]
+  
+  # Fit linear regression model
+  lm_model <- lm(HeatDays30 ~ year, data = subset_data)
+  
+  # Extract coefficients
+  coef_value <- coef(lm_model)[2]  # Extracting the coefficient for TotalExposure
+  
+  # Store urbanid and coefficient in the dataframe
+  coefficients_df_heat <- rbind(coefficients_df_heat, data.frame(urbanid = id,
+                                                       coefficient = coef_value))
+}
+
+colnames(coefficients_df) <- c("urbanid", "TotalExposure_Coef")
+colnames(coefficients_df_no2) <- c("urbanid", "NO2_Coef")
+colnames(coefficients_df_pm25) <- c("urbanid", "PM_Coef")
+colnames(coefficients_df_o3) <- c("urbanid", "Ozone_Coef")
+colnames(coefficients_df_heat) <- c("urbanid", "Heat_Coef")
+colnames(coefficients_df_pop) <- c("urbanid", "Pop_Coef")
+colnames(coefficients_df_values) <- c("urbanid", "Values_Coef")
+
+# Merge data frames
+merged_df <- merge(merge(merge(merge(merge(merge(coefficients_df, coefficients_df_no2, by="urbanid", all=TRUE), coefficients_df_pm25, by="urbanid", all=TRUE), coefficients_df_o3, by="urbanid", all=TRUE), coefficients_df_heat, by="urbanid", all=TRUE), coefficients_df_pop, by="urbanid", all=TRUE), coefficients_df_values, by="urbanid", all=TRUE)
+
+merged_df$Check <- rowSums(merged_df[, 3:7])
+
+merged_df$no2_percent = merged_df$NO2_Coef / merged_df$Values_Coef * 100
+merged_df$pm25_percent = merged_df$PM_Coef / merged_df$Values_Coef * 100
+merged_df$o3_percent = merged_df$Ozone_Coef / merged_df$Values_Coef * 100
+merged_df$heat_percent = merged_df$Heat_Coef / merged_df$Values_Coef * 100
+merged_df$pop_percent = merged_df$Pop_Coef / merged_df$Values_Coef * 100
+
+merged_df$TotalPercent = merged_df$no2_percent + merged_df$pm25_percent + merged_df$o3_percent + merged_df$heat_percent + merged_df$pop_percent
+
+merged_df_filtered = merged_df %>%
+  filter(Values_Coef > 0)
+
+DelhiData = merged_df_filtered %>%
+  filter(urbanid == 9770) %>%
+  select(no2_percent, pm25_percent, o3_percent, heat_percent, pop_percent) %>% 
+  pivot_longer(cols = everything(), 
+               names_to = "variable", 
+               values_to = "value")
+
+ggplot(DelhiData, aes(x = variable, y = value)) +
+  geom_bar(stat = "identity", position = "dodge")
+
+
+ggplot(data = merged_df_filtered) +
+  geom_density(aes(x = no2_percent), color = 'red') + 
+  geom_density(aes(x = pm25_percent), color = 'blue') + 
+  geom_density(aes(x = o3_percent), color = 'green') + 
+  geom_density(aes(x = heat_percent), color = 'orange') +
+  geom_density(aes(x = pop_percent), color = 'purple') + 
+  scale_x_continuous(limits = c(0,101)) +
+  theme_bw()
 
 
 
