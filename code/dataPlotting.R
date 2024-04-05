@@ -14,7 +14,6 @@ setwd("/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - U
 MeanData = read.csv("data/merged/Final Merged Data/UCDB-Dem-Heat-AQ-Mean.csv")
 AllData = read.csv("data/merged/Final Merged Data/UCDB-Dem-Heat-AQ-All.csv")
 
-
 # Add demographic variables ####
 MeanData$YoungPop <- rowSums(MeanData[c('f_0', 'm_0', 'f_1', 'm_1', 'f_5', 'm_5', 'f_10', 'm_10')])
 MeanData$WorkingPop <- rowSums(MeanData[c('f_15', 'f_20', 'f_25', 'f_30', 'f_35', 'f_40', 'f_45', 'f_50', 'f_55', 'f_60', 'm_15', 'm_20', 'm_25', 'm_30', 'm_35', 'm_40', 'm_45', 'm_50', 'm_55', 'm_60')])
@@ -111,12 +110,14 @@ AllDataClipped2020 = AllDataClipped %>%
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 #arrange value plotting highest
-AllDataClipped2020 = AllDataClipped2020 %>%
+PopMapData = AllDataClipped2020 %>%
+  filter(!is.na(TotalPop)) %>%
   arrange(TotalPop)
+  
 
 PopMap <- ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = TotalPop), size = 0.3) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = PopMapData, aes(x = longitude, y = latitude, color = TotalPop), size = 0.3) +
   scale_color_viridis_c(limits = c(1, 46000000), option = 'viridis', 
                         breaks = c(1, 10, 100, 1000, 10000, 100000, 1000000, 10000000), 
                         trans = "log10") +
@@ -135,12 +136,13 @@ PopMap <- ggplot() +
 PopMap
 
 
-AllDataClipped2020 = AllDataClipped2020 %>%
+DRMapData = AllDataClipped2020 %>%
+  filter(!is.na(DependencyRatio)) %>%
   arrange(DependencyRatio)
 
 DRMap = ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = DependencyRatio), size = 0.3) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = DRMapData, aes(x = longitude, y = latitude, color = DependencyRatio), size = 0.3) +
   scale_color_viridis_c(limits = c(0,1.4), option = 'viridis', breaks = seq(0, 1.4, 0.2)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
@@ -157,12 +159,13 @@ DRMap = ggplot() +
 DRMap
 
 #arrange value plotting highest
-AllDataClipped2020 = AllDataClipped2020 %>%
+NOMapData = AllDataClipped2020 %>%
+  filter(!is.na(AnnualNO2)) %>%
   arrange(AnnualNO2)
 
 NO2Map = ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = AnnualNO2), size = 0.3) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = NOMapData, aes(x = longitude, y = latitude, color = AnnualNO2), size = 0.3) +
   scale_color_viridis_c(limits = c(0,25), option = 'plasma', breaks = seq(0, 25, 5)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
@@ -180,12 +183,13 @@ NO2Map
 
 
 #arrange value plotting highest
-AllDataClipped2020 = AllDataClipped2020 %>%
+PMMapData = AllDataClipped2020 %>%
+  filter(!is.na(AnnualPM25)) %>%
   arrange(AnnualPM25)
 
 PMMap = ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = AnnualPM25), size = 0.3) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = PMMapData, aes(x = longitude, y = latitude, color = AnnualPM25), size = 0.3) +
   scale_color_viridis_c(limits = c(0,150), option = 'plasma', breaks = seq(0, 150, 25)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
@@ -202,13 +206,14 @@ PMMap = ggplot() +
 PMMap
 
 #arrange value plotting AllDataClipped2016
-AllDataClipped2020 = AllDataClipped2020 %>%
+O3MapData = AllDataClipped2020 %>%
+  filter(!is.na(AnnualOzone)) %>%
   arrange(AnnualOzone)
 
 OzoneMap = ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = AnnualOzone), size = 0.3) +
-  scale_color_viridis_c(limits = c(0,80), option = 'plasma', breaks = seq(0, 80, 20)) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = O3MapData, aes(x = longitude, y = latitude, color = AnnualOzone), size = 0.3) +
+  scale_color_viridis_c(limits = c(0,82), option = 'plasma', breaks = seq(0, 82, 20)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
   theme(legend.position = "bottom",
@@ -224,12 +229,13 @@ OzoneMap = ggplot() +
 OzoneMap
 
 #arrange value plotting highest
-AllDataClipped2020 = AllDataClipped2020 %>%
+HeatMapData = AllDataClipped2020 %>%
+  filter(!is.na(HeatDays30)) %>%
   arrange(HeatDays30)
 
 HeatMap = ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
-  geom_point(data = AllDataClipped2020, aes(x = longitude, y = latitude, color = HeatDays30), size = 0.3) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = HeatMapData, aes(x = longitude, y = latitude, color = HeatDays30), size = 0.3) +
   scale_color_viridis_c(limits = c(0,260), option = 'rocket', begin = 0.2, breaks = seq(0,260,40)) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
@@ -442,11 +448,11 @@ test_long <- gather(test, AgeCat, PopSum, YoungPopExposed:OldPopExposed, factor_
 test_long$PlotGroup <- paste(test_long$continent_name, "-", test_long$AgeCat)
 test_long <- test_long[complete.cases(test_long), ]
 
-PMPopulationPlot = ggplot(test_long, aes(x = PM25WHOCategory, y =PopSum, fill = PlotGroup)) +
+PMPopulationPlot = ggplot(test_long, aes(y = PM25WHOCategory, x =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
-  scale_x_discrete(drop = FALSE) +
+  scale_x_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
+  scale_y_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("WHO Annual PM2.5 Threshold", y = "Total Population", fill = "Country & Age-Group"))
 PMPopulationPlot
@@ -462,11 +468,11 @@ test_long <- gather(test, AgeCat, PopSum, YoungPopExposed:OldPopExposed, factor_
 test_long$PlotGroup <- paste(test_long$continent_name, "-", test_long$AgeCat)
 test_long <- test_long[complete.cases(test_long), ]
 
-NOPopulationPlot = ggplot(test_long, aes(x = NO2WHOCategory, y =PopSum, fill = PlotGroup)) +
+NOPopulationPlot = ggplot(test_long, aes(y = NO2WHOCategory, x =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
-  scale_x_discrete(drop = FALSE) +
+  scale_x_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
+  scale_y_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("WHO Annual NO2 Threshold", y = "Total Population", fill = "Country & Age-Group"))
 NOPopulationPlot
@@ -483,11 +489,11 @@ test_long <- gather(test, AgeCat, PopSum, YoungPopExposed:OldPopExposed, factor_
 test_long$PlotGroup <- paste(test_long$continent_name, "-", test_long$AgeCat)
 test_long <- test_long[complete.cases(test_long), ]
 
-OzonePopulationPlot = ggplot(test_long, aes(x = OzoneWHOCategory, y =PopSum, fill = PlotGroup)) +
+OzonePopulationPlot = ggplot(test_long, aes(y = OzoneWHOCategory, x =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
-  scale_x_discrete(drop = FALSE) +
+  scale_x_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
+  scale_y_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("WHO Annual Ozone Threshold", y = "Total Population", fill = "Country & Age-Group"))
 OzonePopulationPlot
@@ -503,11 +509,11 @@ test_long <- gather(test, AgeCat, PopSum, YoungPopExposed:OldPopExposed, factor_
 test_long$PlotGroup <- paste(test_long$continent_name, "-", test_long$AgeCat)
 test_long <- test_long[complete.cases(test_long), ]
 
-HeatPopulationPlot = ggplot(test_long, aes(x = HeatCategory, y =PopSum, fill = PlotGroup)) +
+HeatPopulationPlot = ggplot(test_long, aes(y = HeatCategory, x =PopSum, fill = PlotGroup)) +
   geom_bar(stat = "identity", position = "stack") +
   theme_bw() +
-  scale_y_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
-  scale_x_discrete(drop = FALSE) +
+  scale_x_continuous(labels = comma, limits = c(0,1800000000), breaks = seq(0, 1800000000, by = 200000000)) +
+  scale_y_discrete(drop = FALSE) +
   scale_fill_manual(values = color_palette) +
   labs(x = expression("Heat Threshold", y = "Total Population", fill = "Country & Age-Group")) 
 HeatPopulationPlot
@@ -521,13 +527,16 @@ ggpubr::ggarrange(PMPopulationPlot, NOPopulationPlot, OzonePopulationPlot, HeatP
 ## Figure 5 ####
 
 Fig5Data = AllDataClipped2020 %>%
-  filter(HeatDays30 > 30 &
-           AnnualOzone > 35 )
-           #AnnualPM25 > 25 ) 
-           #AnnualNO2 > 15.96)
+  filter(HeatDays30 > 30 & AnnualPM25 > 15 & AnnualOzone > 35  & AnnualNO2 > 15.96)
+         
+         
+  
+           AnnualOzone > 35 &
+           AnnualPM25 > 25 & 
+           AnnualNO2 > 15.96)
 
 MapPlot = ggplot() +
-  geom_sf(data = world, fill = "grey50", color = 'black', linewidth = 0.1) +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
   geom_point(data = Fig5Data, aes(x = longitude, y = latitude), color = 'red', size = 0.3) +
   scale_y_continuous(limits = c(-55,90)) +
   theme_void() +
@@ -589,7 +598,7 @@ ggplot(AllDataClippedComplete, aes(x = year, y = TotalPop)) +
   geom_bar(stat = "identity")
 
 Fig4Data = AllDataClippedComplete %>%
-  filter(AnnualPM25 > 5 & AnnualNO2 > 10.64 & AnnualOzone > 35 & HeatDays30 > 30)
+  filter(HeatDays30 > 30 & AnnualPM25 > 5 & AnnualOzone > 30  & AnnualNO2 > 5.32)
 
 Fig4Data  = Fig4Data %>%
   group_by(year) %>%
@@ -683,6 +692,70 @@ ExposedPopChange = rbind(ExposedPop2005, ExposedPop2020)
 UsefulData = AllDataClipped %>%
   select(urbanid, year, AnnualNO2, AnnualPM25, AnnualOzone, HeatDays30, TotalPop)
 UsefulData <- UsefulData[complete.cases(UsefulData), ]
+
+
+data = UsefulData
+
+# Ensure 'year' column is numeric
+data$year <- as.numeric(data$year)
+
+# Filter data for years 2005 and 2020
+data <- data[data$year %in% c(2005, 2020), ]
+
+# Initialize an empty dataframe to store results
+predicted_values <- data.frame(matrix(NA, nrow = 0, ncol = 2 + 4 * 2))
+
+# Perform linear regression for each variable\
+# Perform linear regression for each variable
+variables <- c("AnnualPM25", "AnnualNO2", "AnnualOzone", "HeatDays30", "TotalPop")
+for (var in variables) {
+  # Fit linear regression model
+  lm_model <- lm(data[, var] ~ year, data = data)
+  
+  # Predict values for 2005 and 2020
+  pred_2005 <- predict(lm_model, newdata = data.frame(year = 2005))
+  pred_2020 <- predict(lm_model, newdata = data.frame(year = 2020))
+  
+  # Append results to the dataframe
+  predicted_values <- rbind(predicted_values, cbind(data[, c("urbanid", "year")], var, pred_2005, pred_2020))
+}
+
+# Add column names
+colnames(predicted_values) <- c("urbanid", "year", "variable", "pred_2005", "pred_2020")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 UsefulData$NO2Exposure = UsefulData$AnnualNO2 * UsefulData$TotalPop
 UsefulData$PM25Exposure = UsefulData$AnnualPM25 * UsefulData$TotalPop
