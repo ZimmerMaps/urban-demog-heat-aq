@@ -618,6 +618,185 @@ ggplot(Fig4DataLong, aes(x = year, PopSum, fill = AgeCat)) +
        fill = "Category") +
   theme(legend.position = c(0.2, 0.8))
 
+# For each variable/city, what is the linear trend? ####
+
+TrendDataRaw = AllDataClipped %>%
+  select(urbanid, year, TotalPop, AnnualNO2, DependencyRatio, AnnualNO2, AnnualPM25, AnnualOzone, HeatDays30) %>%
+  filter(complete.cases(.))
+
+
+# Create an empty dataframe to store coefficients
+coefficients_df <- data.frame(urbanid = unique(TrendDataRaw$urbanid))
+
+# Iterate over each city
+for (urbanid in unique(TrendDataRaw$urbanid)) {
+  # Subset dataframe for the current city
+  city_df <- TrendDataRaw[TrendDataRaw$urbanid == urbanid, ]
+  
+  # Iterate over each variable (excluding 'city' and 'year')
+  for (var in names(city_df)[!names(city_df) %in% c("urbanid", "year")]) {
+    # Fit linear regression model
+    lm_model <- lm(city_df[[var]] ~ city_df$year)
+    
+    # Extract coefficient and store in coefficients_df
+    coefficients_df[coefficients_df$urbanid == urbanid, var] <- coef(lm_model)[2]  # Coefficient of 'year'
+  }
+}
+
+IncreasingCities = coefficients_df %>%
+  filter(AnnualNO2 > 0 & AnnualPM25 > 0 & AnnualOzone > 0 & HeatDays30 > 0)
+
+selected_columns <- c("urbanid", "city_name", "country_name", "latitude", "longitude")
+
+# Merge x with selected columns of y
+IncreasingCitiesInfo <- merge(IncreasingCities, AllDataClipped2020[selected_columns], by = "urbanid", all.x = TRUE)
+
+
+ggplot() +
+  geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
+  geom_point(data = IncreasingCitiesInfo, aes(x = longitude, y = latitude), color = 'red', size = 1, shape = 19) +
+  scale_y_continuous(limits = c(-55,90)) +
+  theme_void() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(title = "Cities with Increasing Trend of AQ & Heat", color = "") +
+  guides(color = guide_colourbar(direction = "horizontal", 
+                                 barwidth = 20, 
+                                 barheight = 1.2,
+                                 frame.color = "grey80",
+                                 ticks.color = "grey80")) 
+
+
+
+DependencyRatioData2000 = AllDataClipped %>%
+  filter(year == 2005) %>%
+  select(urbanid, continent_name, f_0, f_1, f_5, f_10, f_15, f_20, f_25, f_30, f_35, f_40, f_45, f_50, f_55, f_60, f_65, f_70, f_75, f_80,
+         m_0, m_1, m_5, m_10, m_15, m_20, m_25, m_30, m_35, m_40, m_45, m_50, m_55, m_60, m_65, m_70, m_75, m_80)
+
+DependencyRatioData2000Selected <- DependencyRatioData2000[DependencyRatioData2000$urbanid %in% IncreasingCitiesInfo$urbanid, ]
+DependencyRatioData2000Selected$f_1 = DependencyRatioData2000Selected$f_1 + DependencyRatioData2000Selected$f_0
+DependencyRatioData2000Selected$m_1 = DependencyRatioData2000Selected$m_1 + DependencyRatioData2000Selected$m_0
+
+
+DependencyRatioData2000Selected = DependencyRatioData2000Selected %>%
+  select(-c (f_0, m_0))
+
+DependencyRatioData2000Selected <- DependencyRatioData2000Selected %>%
+  pivot_longer(
+    cols = starts_with(c("f_", "m_")),
+    names_to = c("sex", "age"),
+    names_pattern = "([fm])_(\\d+)",
+    values_to = "population") %>%
+  group_by(continent_name, sex, age) %>%
+  summarise(population = sum(population)) 
+
+abs_comma <- function (x, ...) {
+  format(abs(x), ..., big.mark = ",", scientific = FALSE, trim = TRUE)
+}
+
+DependencyRatioData2000Selected$age = as.factor(as.numeric(DependencyRatioData2000Selected$age))
+
+ggplot(data = DependencyRatioData2000Selected, 
+                     mapping = aes(x = ifelse(test = sex == "m", yes = -population, no = population), 
+                                   y = age, fill = continent_name)) +
+  geom_col(color = 'grey50', position = "stack") +
+  scale_x_symmetric(labels = abs_comma, mid = 0, limits = c(-20000000, 20000000)) +
+  labs(x = "Population", y = "", fill = "Continent", title = "2005") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+
+# 2020 
+
+DependencyRatioData2020 = AllDataClipped %>%
+  filter(year == 2020) %>%
+  select(urbanid, continent_name, f_0, f_1, f_5, f_10, f_15, f_20, f_25, f_30, f_35, f_40, f_45, f_50, f_55, f_60, f_65, f_70, f_75, f_80,
+         m_0, m_1, m_5, m_10, m_15, m_20, m_25, m_30, m_35, m_40, m_45, m_50, m_55, m_60, m_65, m_70, m_75, m_80)
+
+DependencyRatioData2020Selected <- DependencyRatioData2020[DependencyRatioData2020$urbanid %in% IncreasingCitiesInfo$urbanid, ]
+DependencyRatioData2020Selected$f_1 = DependencyRatioData2020Selected$f_1 + DependencyRatioData2020Selected$f_0
+DependencyRatioData2020Selected$m_1 = DependencyRatioData2020Selected$m_1 + DependencyRatioData2020Selected$m_0
+
+
+DependencyRatioData2020Selected = DependencyRatioData2020Selected %>%
+  select(-c (f_0, m_0))
+
+DependencyRatioData2020Selected <- DependencyRatioData2020Selected %>%
+  pivot_longer(
+    cols = starts_with(c("f_", "m_")),
+    names_to = c("sex", "age"),
+    names_pattern = "([fm])_(\\d+)",
+    values_to = "population") %>%
+  group_by(continent_name, sex, age) %>%
+  summarise(population = sum(population)) 
+
+abs_comma <- function (x, ...) {
+  format(abs(x), ..., big.mark = ",", scientific = FALSE, trim = TRUE)
+}
+
+DependencyRatioData2020Selected$age = as.factor(as.numeric(DependencyRatioData2020Selected$age))
+
+ggplot(data = DependencyRatioData2020Selected, 
+       mapping = aes(x = ifelse(test = sex == "m", yes = -population, no = population), 
+                     y = age, fill = continent_name)) +
+  geom_col(color = 'grey50', position = "stack") +
+  scale_x_symmetric(labels = abs_comma, mid = 0, limits = c(-20000000, 20000000)) +
+  labs(x = "Population", y = "", fill = "Continent", title = "2020") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+
+### not split by continent
+DependencyRatioData2020Selected$age = as.factor(DependencyRatioData2020Selected$age)
+
+AggregateData2020 <- DependencyRatioData2020Selected %>%
+  group_by(sex, age) %>%
+  summarise(population = sum(population))
+
+AggregateData2020$year = 2020
+
+AggregateData2005 <- DependencyRatioData2000Selected %>%
+  group_by(sex, age) %>%
+  summarise(population = sum(population))
+
+AggregateData2005$year = 2005
+
+merged_data <- rbind(AggregateData2020, AggregateData2005)
+
+# Convert age to factor
+merged_data$age <- as.factor(as.numeric(merged_data$age))
+
+# Plotting
+ggplot(data = merged_data, 
+       mapping = aes(x = ifelse(test = sex == "m", yes = -population, no = population), 
+                     y = age, fill = year)) +
+  geom_col(color = 'grey50', position = "identity") +
+  scale_x_symmetric(labels = abs_comma, mid = 0) +
+  labs(x = "Population", y = "") +
+  theme_bw() +
+  theme(legend.position = "none")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Calculate contribution by each variable ####
 ExposedPop2005 = AllDataClipped %>%
