@@ -644,9 +644,10 @@ for (urbanid in unique(TrendDataRaw$urbanid)) {
 }
 
 IncreasingCities = coefficients_df %>%
-  filter(AnnualNO2 > 0 & AnnualPM25 > 0 & AnnualOzone > 0 & HeatDays30 > 0)
+  filter(AnnualNO2 > 0 & AnnualPM25 > 0 & AnnualOzone > 0 & HeatDays30 > 0) %>%
+  select(-c(TotalPop))
 
-selected_columns <- c("urbanid", "city_name", "country_name", "latitude", "longitude")
+selected_columns <- c("urbanid", "city_name", "country_name", "latitude", "longitude", "TotalPop")
 
 # Merge x with selected columns of y
 IncreasingCitiesInfo <- merge(IncreasingCities, AllDataClipped2020[selected_columns], by = "urbanid", all.x = TRUE)
@@ -666,6 +667,9 @@ ggplot() +
                                  barheight = 1.2,
                                  frame.color = "grey80",
                                  ticks.color = "grey80")) 
+
+
+row_with_dhaka <- AllDataClipped2020[AllDataClipped2020$city_name == "Douala",]
 
 
 
@@ -778,6 +782,31 @@ ggplot(data = merged_data,
   labs(x = "Population", y = "") +
   theme_bw() +
   theme(legend.position = "none")
+
+
+
+## Animated
+
+DependencyRatioData2020 = AllDataClipped %>%
+  filter(year == 2020) %>%
+  select(urbanid, continent_name, f_0, f_1, f_5, f_10, f_15, f_20, f_25, f_30, f_35, f_40, f_45, f_50, f_55, f_60, f_65, f_70, f_75, f_80,
+         m_0, m_1, m_5, m_10, m_15, m_20, m_25, m_30, m_35, m_40, m_45, m_50, m_55, m_60, m_65, m_70, m_75, m_80)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
