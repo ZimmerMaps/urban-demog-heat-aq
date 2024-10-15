@@ -11,18 +11,18 @@ library(lemon)
 setwd("/Users/andrewzimmer/Documents/Montana State - Postdoc/Research/Zimmer - Urban Demography : AQ : Heat/")
 
 # load data ####
-MeanData = read.csv("data/merged/Final Merged Data/UCDB-Dem-Heat-AQ-Mean.csv")
+#MeanData = read.csv("data/merged/Final Merged Data/UCDB-Dem-Heat-AQ-Mean.csv")
 AllData = read.csv("data/merged/Final Merged Data/UCDB-Dem-Heat-AQ-All.csv")
 
 # Add demographic variables ####
-MeanData$YoungPop <- rowSums(MeanData[c('f_0', 'm_0', 'f_1', 'm_1', 'f_5', 'm_5', 'f_10', 'm_10')])
-MeanData$WorkingPop <- rowSums(MeanData[c('f_15', 'f_20', 'f_25', 'f_30', 'f_35', 'f_40', 'f_45', 'f_50', 'f_55', 'f_60', 'm_15', 'm_20', 'm_25', 'm_30', 'm_35', 'm_40', 'm_45', 'm_50', 'm_55', 'm_60')])
-MeanData$OldPop <- rowSums(MeanData[c('f_65', 'f_70', 'f_75', 'f_80', 'm_65', 'm_70', 'm_75', 'm_80')])
-MeanData$TotalPop <- rowSums(MeanData[c('YoungPop', 'WorkingPop', 'OldPop')])
-MeanData$DependencyRatio = (MeanData$YoungPop + MeanData$OldPop) / MeanData$WorkingPop
+#MeanData$YoungPop <- rowSums(MeanData[c('f_0', 'm_0', 'f_1', 'm_1', 'f_5', 'm_5', 'f_10', 'm_10')])
+#MeanData$WorkingPop <- rowSums(MeanData[c('f_15', 'f_20', 'f_25', 'f_30', 'f_35', 'f_40', 'f_45', 'f_50', 'f_55', 'f_60', 'm_15', 'm_20', 'm_25', 'm_30', 'm_35', 'm_40', 'm_45', 'm_50', 'm_55', 'm_60')])
+#MeanData$OldPop <- rowSums(MeanData[c('f_65', 'f_70', 'f_75', 'f_80', 'm_65', 'm_70', 'm_75', 'm_80')])
+#MeanData$TotalPop <- rowSums(MeanData[c('YoungPop', 'WorkingPop', 'OldPop')])
+#MeanData$DependencyRatio = (MeanData$YoungPop + MeanData$OldPop) / MeanData$WorkingPop
 
-MeanDataClipped = dplyr::select(MeanData, UrbanID, year, Name, country_iso, country_name, continent_name, latitude, longitude, YoungPop, WorkingPop, OldPop, TotalPop, DependencyRatio, MeanNO2, MeanPM25, MeanOzone, MeanHeat30)
-colnames(MeanDataClipped) = c('urbanid', 'year', 'city_name', 'country_iso', 'country_name', 'continent_name', 'latitude', 'longitude', 'YoungPop', 'WorkingPop', 'OldPop', 'TotalPop', 'DependencyRatio', 'MeanNO2', 'MeanPM25', 'MeanOzone', 'MeanHeatDays30')
+#MeanDataClipped = dplyr::select(MeanData, UrbanID, year, Name, country_iso, country_name, continent_name, latitude, longitude, YoungPop, WorkingPop, OldPop, TotalPop, DependencyRatio, MeanNO2, MeanPM25, MeanOzone, MeanHeat30)
+#colnames(MeanDataClipped) = c('urbanid', 'year', 'city_name', 'country_iso', 'country_name', 'continent_name', 'latitude', 'longitude', 'YoungPop', 'WorkingPop', 'OldPop', 'TotalPop', 'DependencyRatio', 'MeanNO2', 'MeanPM25', 'MeanOzone', 'MeanHeatDays30')
 
 # keep only complete cases
 #MeanDataClipped <- MeanDataClipped[complete.cases(MeanDataClipped), ]
@@ -68,34 +68,34 @@ DependencyRatio_labels <- c("0-0.3", "0.3-0.6", "0.6-0.9", "0.9-1.2", "1.2-1.5",
 
 
 # apply thresholds to AQ variables ####
-MeanDataClipped$PM25WHOCategory <- cut(MeanDataClipped$MeanPM25, breaks = PM_WHO_thresholds_ug, labels = PM_WHO_labels, include.lowest = TRUE)
+#MeanDataClipped$PM25WHOCategory <- cut(MeanDataClipped$MeanPM25, breaks = PM_WHO_thresholds_ug, labels = PM_WHO_labels, include.lowest = TRUE)
 AllDataClipped$PM25WHOCategory <- cut(AllDataClipped$AnnualPM25, breaks = PM_WHO_thresholds_ug, labels = PM_WHO_labels, include.lowest = TRUE)
-MeanDataClipped$PM25WHOCategory <- factor(MeanDataClipped$PM25WHOCategory, levels = PM_WHO_labels)
+#MeanDataClipped$PM25WHOCategory <- factor(MeanDataClipped$PM25WHOCategory, levels = PM_WHO_labels)
 AllDataClipped$PM25WHOCategory <- factor(AllDataClipped$PM25WHOCategory, levels = PM_WHO_labels)
 
-MeanDataClipped$NO2WHOCategory <- cut(MeanDataClipped$MeanNO2, breaks = NO2_WHO_thresholds_ppbv, labels = NO2_WHO_labels, include.lowest = TRUE)
+#MeanDataClipped$NO2WHOCategory <- cut(MeanDataClipped$MeanNO2, breaks = NO2_WHO_thresholds_ppbv, labels = NO2_WHO_labels, include.lowest = TRUE)
 AllDataClipped$NO2WHOCategory <- cut(AllDataClipped$AnnualNO2, breaks = NO2_WHO_thresholds_ppbv, labels = NO2_WHO_labels, include.lowest = TRUE)
-MeanDataClipped$NO2WHOCategory <- factor(MeanDataClipped$NO2WHOCategory, levels = NO2_WHO_labels)
+#MeanDataClipped$NO2WHOCategory <- factor(MeanDataClipped$NO2WHOCategory, levels = NO2_WHO_labels)
 AllDataClipped$NO2WHOCategory <- factor(AllDataClipped$NO2WHOCategory, levels = NO2_WHO_labels)
 
-MeanDataClipped$OzoneWHOCategory <- cut(MeanDataClipped$MeanOzone, breaks = O3_WHO_thresholds_ppbv, labels = O3_WHO_labels, include.lowest = TRUE)
+#MeanDataClipped$OzoneWHOCategory <- cut(MeanDataClipped$MeanOzone, breaks = O3_WHO_thresholds_ppbv, labels = O3_WHO_labels, include.lowest = TRUE)
 AllDataClipped$OzoneWHOCategory <- cut(AllDataClipped$AnnualOzone, breaks = O3_WHO_thresholds_ppbv, labels = O3_WHO_labels, include.lowest = TRUE)
-MeanDataClipped$OzoneWHOCategory <- factor(MeanDataClipped$OzoneWHOCategory, levels = O3_WHO_labels)
+#MeanDataClipped$OzoneWHOCategory <- factor(MeanDataClipped$OzoneWHOCategory, levels = O3_WHO_labels)
 AllDataClipped$OzoneWHOCategory <- factor(AllDataClipped$OzoneWHOCategory, levels = O3_WHO_labels)
 
-MeanDataClipped$HeatCategory <- cut(MeanDataClipped$MeanHeatDays30, breaks = Heat_thresholds, labels = Heat_labels, include.lowest = TRUE)
+#MeanDataClipped$HeatCategory <- cut(MeanDataClipped$MeanHeatDays30, breaks = Heat_thresholds, labels = Heat_labels, include.lowest = TRUE)
 AllDataClipped$HeatCategory <- cut(AllDataClipped$HeatDays30, breaks = Heat_thresholds, labels = Heat_labels, include.lowest = TRUE)
-MeanDataClipped$HeatCategory <- factor(MeanDataClipped$HeatCategory, levels = Heat_labels)
+#MeanDataClipped$HeatCategory <- factor(MeanDataClipped$HeatCategory, levels = Heat_labels)
 AllDataClipped$HeatCategory <- factor(AllDataClipped$HeatCategory, levels = Heat_labels)
 
-MeanDataClipped$CitySize <- cut(MeanDataClipped$TotalPop, breaks = CitySize_thresholds, labels = CitySize_labels, include.lowest = TRUE)
+#MeanDataClipped$CitySize <- cut(MeanDataClipped$TotalPop, breaks = CitySize_thresholds, labels = CitySize_labels, include.lowest = TRUE)
 AllDataClipped$CitySize <- cut(AllDataClipped$TotalPop, breaks = CitySize_thresholds, labels = CitySize_labels, include.lowest = TRUE)
-MeanDataClipped$CitySize <- factor(MeanDataClipped$CitySize, levels = CitySize_labels)
+#MeanDataClipped$CitySize <- factor(MeanDataClipped$CitySize, levels = CitySize_labels)
 AllDataClipped$CitySize <- factor(AllDataClipped$CitySize, levels = CitySize_labels)
 
-MeanDataClipped$DependencyRatioCategory <- cut(MeanDataClipped$DependencyRatio, breaks = DependencyRatio_thresholds, labels = DependencyRatio_labels, include.lowest = TRUE)
+#MeanDataClipped$DependencyRatioCategory <- cut(MeanDataClipped$DependencyRatio, breaks = DependencyRatio_thresholds, labels = DependencyRatio_labels, include.lowest = TRUE)
 AllDataClipped$DependencyRatioCategory <- cut(AllDataClipped$DependencyRatio, breaks = DependencyRatio_thresholds, labels = DependencyRatio_labels, include.lowest = TRUE)
-MeanDataClipped$DependencyRatioCategory <- factor(MeanDataClipped$DependencyRatioCategory, levels = DependencyRatio_labels)
+#MeanDataClipped$DependencyRatioCategory <- factor(MeanDataClipped$DependencyRatioCategory, levels = DependencyRatio_labels)
 AllDataClipped$DependencyRatioCategory <- factor(AllDataClipped$DependencyRatioCategory, levels = DependencyRatio_labels)
 
 
@@ -103,6 +103,14 @@ AllDataClipped$DependencyRatioCategory <- factor(AllDataClipped$DependencyRatioC
 # Figure 1 - Maps of all variables as subplot ####
 AllDataClipped2020 = AllDataClipped %>%
   filter(year == 2020)
+
+AllDataClipped2020Dem = AllDataClipped %>%
+  filter(year == 2020) %>%
+  select(-c(f_0, f_1, f_10, f_15, f_20, f_25, f_30, 
+            f_35, f_40, f_45, f_5, f_50, f_55, f_60, 
+            f_65, f_70, f_75, f_80, m_0, m_1, m_10, 
+            m_15, m_20, m_25, m_30, m_35, m_40, m_45, 
+            m_5, m_50, m_55, m_60, m_65, m_70, m_75, m_80))
 
 # KEEP ONLY CITIES WITH ALL DATA POINTS
 #AllDataClipped2019 <- AllDataClipped2019[complete.cases(AllDataClipped2019), ]
@@ -230,14 +238,20 @@ OzoneMap
 
 #arrange value plotting highest
 HeatMapData = AllDataClipped2020 %>%
-  filter(!is.na(HeatDays30)) %>%
-  arrange(HeatDays30)
+  arrange(is.na(HeatDays30), HeatDays30)
 
 HeatMap = ggplot() +
   geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
-  geom_point(data = HeatMapData, aes(x = longitude, y = latitude, color = HeatDays30), size = 0.3) +
-  scale_color_viridis_c(limits = c(0,260), option = 'rocket', begin = 0.2, breaks = seq(0,260,40)) +
-  scale_y_continuous(limits = c(-55,90)) +
+  # First, plot NA values as outlines (so they are at the bottom)
+  geom_point(data = HeatMapData %>% filter(is.na(HeatDays30)), 
+             aes(x = longitude, y = latitude), 
+             size = 0.3, shape = 21, color = "grey60", fill = NA) +
+  # Then, plot points with valid HeatDays30 values on top
+  geom_point(data = HeatMapData %>% filter(!is.na(HeatDays30)), 
+             aes(x = longitude, y = latitude, color = HeatDays30), 
+             size = 0.3) +
+  scale_color_viridis_c(limits = c(0, 260), option = 'rocket', begin = 0.2, breaks = seq(0, 260, 40)) +
+  scale_y_continuous(limits = c(-55, 90)) +
   theme_void() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
@@ -247,12 +261,9 @@ HeatMap = ggplot() +
                                  barwidth = 20, 
                                  barheight = 1.2,
                                  frame.color = "grey80",
-                                 ticks.color = "grey80")) 
+                                 ticks.color = "grey80"))
 
 HeatMap
-
-
-
 
 ggpubr::ggarrange(PopMap, DRMap, NO2Map, PMMap, OzoneMap, HeatMap, nrow = 3, ncol = 2)
 
@@ -527,13 +538,13 @@ ggpubr::ggarrange(PMPopulationPlot, NOPopulationPlot, OzonePopulationPlot, HeatP
 ## Figure 5 ####
 
 Fig5Data = AllDataClipped2020 %>%
-  filter(HeatDays30 > 30 & AnnualPM25 > 15 & AnnualOzone > 35  & AnnualNO2 > 15.96)
+  filter(HeatDays30 > 30 & AnnualNO2 > 15.96 & AnnualOzone > 35 & AnnualPM25 > 25)
          
          
   
-           AnnualOzone > 35 &
-           AnnualPM25 > 25 & 
-           AnnualNO2 > 15.96)
+           #AnnualOzone > 35 &
+           #AnnualPM25 > 25 & 
+           #AnnualNO2 > 15.96)
 
 MapPlot = ggplot() +
   geom_sf(data = world, fill = "grey75", color = 'black', linewidth = 0.1) +
@@ -589,6 +600,10 @@ PyramidPlot = ggplot(data = Fig5Data,
 PyramidPlot
 
 ggpubr::ggarrange(MapPlot, PyramidPlot, nrow = 1)
+
+sum(Fig5Data$population)
+
+
 
 
 AllDataClippedComplete = AllDataClipped 
