@@ -610,16 +610,28 @@ AllDataClippedComplete = AllDataClipped
 AllDataClippedComplete <- AllDataClippedComplete[complete.cases(AllDataClippedComplete), ]
 
 ggplot(AllDataClippedComplete, aes(x = year, y = TotalPop)) +
-  geom_bar(stat = "identity")
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  labs(x = "Year", y = "Total Population Exposed") +
+  scale_y_continuous(labels = comma)
 
 Fig4Data = AllDataClippedComplete %>%
   filter(HeatDays30 > 30 & AnnualPM25 > 5 & AnnualOzone > 30  & AnnualNO2 > 5.32)
+
 
 Fig4Data  = Fig4Data %>%
   group_by(year) %>%
   summarise(YoungExposed = sum(YoungPop),
             WorkingExposed = sum(WorkingPop),
-            OldExposed = sum(OldPop))
+            OldExposed = sum(OldPop),
+            TotalExposed = sum(TotalPop))
+
+ggplot(Fig4Data, aes(x = year, y = TotalExposed)) +
+  geom_bar(stat = "identity", color = 'grey10', fill = 'grey80', size = 0.8, width = 0.8) +
+  theme_bw() +
+  labs(x = "Year", y = "Total Population Exposed") +
+  scale_y_continuous(labels = comma)
+
 
 Fig4DataLong <- gather(Fig4Data, AgeCat, PopSum, YoungExposed:OldExposed, factor_key=TRUE)
 Fig4DataLong$year = as.factor(Fig4DataLong$year)
@@ -662,10 +674,15 @@ IncreasingCities = coefficients_df %>%
   filter(AnnualNO2 > 0 & AnnualPM25 > 0 & AnnualOzone > 0 & HeatDays30 > 0) %>%
   select(-c(TotalPop))
 
-selected_columns <- c("urbanid", "city_name", "country_name", "latitude", "longitude", "TotalPop")
+selected_columns <- c("urbanid", "city_name", "country_name", "latitude", "longitude", "TotalPop", "YoungPop", "OldPop", "WorkingPop", "DependencyRatio")
+
+IncreasingCities <- IncreasingCities %>% rename(DependencyRatioCoef = DependencyRatio)
 
 # Merge x with selected columns of y
 IncreasingCitiesInfo <- merge(IncreasingCities, AllDataClipped2020[selected_columns], by = "urbanid", all.x = TRUE)
+
+IncreasingCitiesInfo$YoungDR = IncreasingCitiesInfo$YoungPop / IncreasingCitiesInfo$WorkingPop
+IncreasingCitiesInfo$OldDR = IncreasingCitiesInfo$OldPop / IncreasingCitiesInfo$WorkingPop
 
 
 ggplot() +
@@ -806,38 +823,6 @@ DependencyRatioData2020 = AllDataClipped %>%
   filter(year == 2020) %>%
   select(urbanid, continent_name, f_0, f_1, f_5, f_10, f_15, f_20, f_25, f_30, f_35, f_40, f_45, f_50, f_55, f_60, f_65, f_70, f_75, f_80,
          m_0, m_1, m_5, m_10, m_15, m_20, m_25, m_30, m_35, m_40, m_45, m_50, m_55, m_60, m_65, m_70, m_75, m_80)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
